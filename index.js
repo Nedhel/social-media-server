@@ -9,9 +9,11 @@ const textBodyParser = bodyParser.text({
     defaultCharset: "utf-8",
 });
 
-const { authenticateUser,
+const {
+    authenticateUser,
     getCurrentUser,
-    addUser } = require('./modules/login.js');
+    addUser,
+} = require("./modules/login.js");
 
 app.use(
     cors({
@@ -62,75 +64,99 @@ app.put("/", textBodyParser, async function (req, res) {
     }
 });
 
-app.post('/getUserData', textBodyParser, async function (req,res) {
-    console.log('req.headers: ', req.headers); 
+app.post("/getUserData", textBodyParser, async function (req, res) {
+    console.log("req.headers: ", req.headers);
 
-    const reqOrigin = req.headers['origin']; // get the origin of the request
-    const reqTask = req.headers['task']; // get the task of the request
+    const reqOrigin = req.headers["origin"]; // get the origin of the request
+    const reqTask = req.headers["task"]; // get the task of the request
 
-    console.log("Processing request from " + reqOrigin + " for route " + req.url + " with method " + req.method + " for task: " + reqTask);
+    console.log(
+        "Processing request from " +
+            reqOrigin +
+            " for route " +
+            req.url +
+            " with method " +
+            req.method +
+            " for task: " +
+            reqTask
+    );
 
-    if (reqTask === 'getCurrentUserData') {
+    if (reqTask === "getCurrentUserData") {
         try {
             let request = JSON.parse(req.body);
-            currentUserEmail = request.currentUserEmail
-            const {currentUser} = await getCurrentUser(currentUserEmail);
+            currentUserEmail = request.currentUserEmail;
+            const { currentUser } = await getCurrentUser(currentUserEmail);
             console.log(currentUser);
-            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader("Access-Control-Allow-Origin", "*");
             // allow client to access the custom 'request-result' header:
-            res.setHeader('Access-Control-Expose-Headers', 'request-result'); 
+            res.setHeader("Access-Control-Expose-Headers", "request-result");
             // set the custom header 'request-result'
-            res.setHeader('request-result', 'Request ' + req.method + ' was received successfully.');
-            res.status(200).json({currentUser});
+            res.setHeader(
+                "request-result",
+                "Request " + req.method + " was received successfully."
+            );
+            res.status(200).json({ currentUser });
         } catch (error) {
-            console.log('getCurrentUser() error :' ,error);
+            console.log("getCurrentUser() error :", error);
             res.status(500).send("Server Error");
         }
-        
     }
-})
+});
 
-app.post('/login', textBodyParser, async function (req, res) {
+app.post("/login", textBodyParser, async function (req, res) {
     // print the HTTP Request Headers
-    console.log('req.headers: ', req.headers); 
-    const reqOrigin = req.headers['origin']; // get the origin of the request
-    const reqTask = req.headers['task']; // get the task of the request
+    console.log("req.headers: ", req.headers);
+    const reqOrigin = req.headers["origin"]; // get the origin of the request
+    const reqTask = req.headers["task"]; // get the task of the request
     let request = JSON.parse(req.body);
-    console.log("Processing request from " + reqOrigin + " for route " + req.url + " with method " + req.method + " for task: " + reqTask);
+    console.log(
+        "Processing request from " +
+            reqOrigin +
+            " for route " +
+            req.url +
+            " with method " +
+            req.method +
+            " for task: " +
+            reqTask
+    );
 
     // TASK Check
-    if (reqTask === 'login') {
+    if (reqTask === "login") {
         try {
             console.log(request);
             const loginResult = await authenticateUser(request);
-            console.log('authenticateUser() result: ', loginResult);
+            console.log("authenticateUser() result: ", loginResult);
 
             if (loginResult == true) {
-                res.setHeader('Access-Control-Allow-Origin', '*');
+                res.setHeader("Access-Control-Allow-Origin", "*");
                 // allow client to access the custom 'request-result' header:
-                res.setHeader('Access-Control-Expose-Headers', 'request-result'); 
+                res.setHeader(
+                    "Access-Control-Expose-Headers",
+                    "request-result"
+                );
                 // set the custom header 'request-result'
-                res.setHeader('request-result', 'Request ' + req.method + ' was received successfully.');
-                res.status(200).json({message:"Login Successful"});
+                res.setHeader(
+                    "request-result",
+                    "Request " + req.method + " was received successfully."
+                );
+                res.status(200).json({ message: "Login Successful" });
             } else {
-                res.status(403).jdon({message:"Login Failed"}); // 403 Forbidden Access
+                res.status(403).jdon({ message: "Login Failed" }); // 403 Forbidden Access
             }
         } catch (error) {
-            console.log('authenticateUser() error:', error);
-            res.status(500).json({message:"Server Error"});
+            console.log("authenticateUser() error:", error);
+            res.status(500).json({ message: "Server Error" });
         }
-    }
-
-    else if (reqTask === 'signup') {
-        try {   
+    } else if (reqTask === "signup") {
+        try {
             console.log(request);
-             let filePath = './data/userData.json';
-             const email = request.email;
-             const name = request.name;
-             const password = request.password;
-             await addUser(filePath,email,name,password);
-        } catch (error){
-            console.log('addUser() error:', error);
+            let filePath = "./data/userData.json";
+            const email = request.email;
+            const name = request.name;
+            const password = request.password;
+            await addUser(filePath, email, name, password);
+        } catch (error) {
+            console.log("addUser() error:", error);
             res.status(500).send("Server Error");
         }
     }
