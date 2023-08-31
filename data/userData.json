@@ -10,5 +10,9 @@
   "gabriel@gmail.com": {
     "name": "Gabriel",
     "password": "3456"
+  },
+  "mao@gmail.com": {
+    "name": "mao",
+    "password": "1234"
   }
 }

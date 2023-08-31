@@ -28,9 +28,11 @@ app.use(bodyParser.json());
 
 const {
     mergeNewPost,
+    mergeNewPostAll,
     writePostJson,
     like,
-    unlike,
+    dislike,
+    readFileJson,
 } = require("./modules/social");
 
 //Solicitud previa
@@ -60,6 +62,12 @@ app.put("/", textBodyParser, async function (req, res) {
     if (req.headers["task"] == "like") {
         like(data.username, data.numberpost);
         console.log("Ok like agregado");
+        //res.send({ response });
+        res.status(200);
+        res.end();
+    } else if (req.headers["task"] == "dislike") {
+        dislike(data.username, data.numberpost);
+        console.log("Ok dislike agregado");
         //res.send({ response });
         res.status(200);
         res.end();
@@ -141,6 +149,7 @@ app.post("/login", textBodyParser, async function (req, res) {
                     "request-result",
                     "Request " + req.method + " was received successfully."
                 );
+
                 res.status(200).json({ message: "Login Successful" });
             } else {
                 res.status(403).jdon({ message: "Login Failed" }); // 403 Forbidden Access
@@ -165,32 +174,43 @@ app.post("/login", textBodyParser, async function (req, res) {
     res.end();
 });
 
-app.post('/post', async function (req, res){
-    const reqOrigin = req.headers['origin'];
-    const reqTask = req.headers['task'];
+app.post("/post", async function (req, res) {
+    const reqOrigin = req.headers["origin"];
+    const reqTask = req.headers["task"];
 
     let form = new formidable.IncomingForm();
 
-    if (reqTask === 'text'){
-        console.log("\n\n\nProcessing request from " + reqOrigin + " for route " + req.url + " with method " + req.method + " for task: " + reqTask);
-        console.log(req.body.content);
-        res.write('text posted');
-    }else {
-        console.log("Posting Image...");
-        form.parse(req, function (error, fields, file) {
+    console.log("Posting Image...");
+    form.parse(req, function (error, fields, file) {
+        let userData = readFileJson(fields.user);
+        let numberOfPost = userData.post;
+        console.log(numberOfPost.length);
+        console.log(fields.textupload[0]);
+        let newpath = "";
+        if (file.fileupload) {
             let filepath = file.fileupload[0].filepath;
-            let newpath = './data/imgs/';
-            newpath += 'image test';
-
+            newpath = "./data/imgs/";
+            newpath += fields.user + "" + numberOfPost.length + ".jpg";
             fs.rename(filepath, newpath, function () {
-
-            res.write('NodeJS File Upload Success!');
-            res.end();
+                res.write("NodeJS File Upload Success!");
+                res.end();
             });
-        });
-    }
+        }
+        let newPost = {
+            text: fields.textupload[0],
+            img: fields.user + "" + numberOfPost.length + ".jpg",
+            likes: 0,
+        };
+        console.log(newPost);
+        writePostJson(fields.user[0], newPost);
+    });
 });
 
+app.get("/data/imgs/:file", function (req, res) {
+    let file = req.params.file;
+
+    res.sendFile(__dirname + "/data/imgs" + "/" + file);
+});
 //Initialize the Server, and Listen to connection requests
 app.listen(port, (err) => {
     if (err) {

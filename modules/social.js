@@ -41,7 +41,24 @@ function mergeNewPost(name) {
         });
     });
     post.sort(function (a, b) {
-        return a.date - b.date;
+        return b.date - a.date;
+    });
+    return post;
+}
+function mergeNewPostAll(name) {
+    let friends = readFileJson(name);
+    let post = [];
+    friends.post.forEach((element) => {
+        post.push(element);
+    });
+    friends.friends.map((nameFriend) => {
+        let friend = readFileJson(nameFriend);
+        friend.post.forEach((element) => {
+            post.push(element);
+        });
+    });
+    post.sort(function (a, b) {
+        return b.date - a.date;
     });
     return post;
 }
@@ -57,19 +74,21 @@ function like(name, postNumber) {
     });
 }
 
-function unlike(name, postNumber) {
+function dislike(name, postNumber) {
     const data = readFileJson(name);
     data.post[postNumber].likes--;
     let newData = JSON.stringify({ ...data });
     fs.writeFile(`./data/${name}.json`, newData, function (err) {
         if (err) throw err;
-        console.log("sum ok!");
+        console.log("rest ok!");
     });
 }
 
 module.exports = {
     mergeNewPost,
+    mergeNewPostAll,
     writePostJson,
     like,
-    unlike,
+    dislike,
+    readFileJson,
 };
