@@ -113,7 +113,7 @@ app.post('/login', textBodyParser, async function (req, res) {
                 res.setHeader('Access-Control-Expose-Headers', 'request-result'); 
                 // set the custom header 'request-result'
                 res.setHeader('request-result', 'Request ' + req.method + ' was received successfully.');
-                res.status(200).json({message:"Login Successful"});
+                res.status(200).json({message:"Login Successed"});
             } else {
                 res.status(403).jdon({message:"Login Failed"}); // 403 Forbidden Access
             }
@@ -130,10 +130,12 @@ app.post('/login', textBodyParser, async function (req, res) {
              const email = request.email;
              const name = request.name;
              const password = request.password;
-             await addUser(filePath,email,name,password);
+             let result =await addUser(filePath,email,name,password);
+             //console.log(result);
+             res.status(200).json({state: result.state, message:result.message})
         } catch (error){
             console.log('addUser() error:', error);
-            res.status(500).send("Server Error");
+            res.status(500).json({state: "Server Error"});
         }
     }
     res.end();

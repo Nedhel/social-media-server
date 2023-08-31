@@ -30,10 +30,11 @@ async function authenticateUser(request) {
     });
 }
 
-async function addUser(filePath, email,name, password) {
+async function addUser(filePath, email, name, password) {
     return new Promise((resolve, reject) => {
         const fileData = fs.readFileSync(filePath);
         let users;
+        let return_val = {}
 
         try {
             users = JSON.parse(fileData);
@@ -50,14 +51,18 @@ async function addUser(filePath, email,name, password) {
 
             fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
             console.log(`User ${email} was added to users.json`);
+            return_val = {state : 'sucess', message: `User ${email} was added to users.json`}
         } else {
             console.log(`Users ${email} already exists!`);
+            return_val = {state: 'fail', message:`Users ${email} already exists!` }
         }
-
-        resolve();
-
-    });
+        resolve(return_val);
+    })
+    .then(function(return_val){
+        return return_val;
+    })
 }
+
 
 module.exports = {
     authenticateUser,
