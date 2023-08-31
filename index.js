@@ -192,9 +192,12 @@ app.post("/post", async function (req, res) {
             newpath = "./data/imgs/";
             newpath += fields.user + "" + numberOfPost.length + ".jpg";
             fs.rename(filepath, newpath, function () {
-                res.write("NodeJS File Upload Success!");
+                res.send("Text with img posted!!");
                 res.end();
             });
+        } else {
+            res.send("Text posted!!");
+            res.end();
         }
         let newPost = {
             text: fields.textupload[0],
