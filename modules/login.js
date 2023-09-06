@@ -51,7 +51,7 @@ async function addUser(filePath, email, name, password) {
 
             fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
             console.log(`User ${email} was added to users.json`);
-            return_val = {state : 'sucess', message: `User ${email} was added to users.json`}
+            return_val = {state : 'sucess', message: `Sign up Sucessed`}
         } else {
             console.log(`Users ${email} already exists!`);
             return_val = {state: 'fail', message:`Users ${email} already exists!` }
