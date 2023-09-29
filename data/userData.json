@@ -1,18 +1,42 @@
 {
-  "qkrtnqja97@gmail.com": {
+  "qkrtnqja97@facewood.com": {
     "name": "Soobeom",
     "password": "1234"
   },
-  "zalpa@gmail.com": {
+  "zalpa@facewood.com": {
     "name": "Zalpa",
     "password": "2345"
   },
-  "gabriel@gmail.com": {
+  "gabriel@facewood.com": {
     "name": "Gabriel",
     "password": "3456"
   },
-  "mao@gmail.com": {
-    "name": "mao",
+  "mao@facewood.com": {
+    "name": "Mao",
     "password": "1234"
-  }
+  },
+  "alice@facewood.com": {
+    "name": "Alice",
+    "password": "1234"
+  },
+  "sachika@facewood.com": {
+    "name": "Sachika",
+    "password": "1234"
+  },
+  "maya@facewood.com": {
+    "name": "Maya",
+    "password": "1234"
+  },
+  "chinatzu@facewood.com": {
+    "name": "Chinatzu",
+    "password": "1234"
+  },
+  "saki@facewood.com": {
+    "name": "Saki",
+    "password": "1234"
+  },
+  "kenny@facewood.com": {
+    "name": "Kenny",
+    "password": "1234"
+  }  
 }

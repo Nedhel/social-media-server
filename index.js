@@ -3,6 +3,7 @@ const cors = require("cors"); // Cors module to handle Preflight requests
 const bodyParser = require("body-parser"); // Body-parser module to parse JSON objects
 const formidable = require("formidable");
 const fs = require("fs");
+const path = require("path");
 
 const app = express(); // instance of an Express object
 const port = 5000; // the port the server will be listening on
@@ -19,12 +20,17 @@ const {
 
 app.use(
     cors({
-        origin: "http://localhost:3000", // enable CORS for localhost:3000
+        origin: "http://localhost:5000", // enable CORS for localhost:3000
     })
 );
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use(express.static(path.join(__dirname, "build")));
+app.get("/", function (req, res) {
+    res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
 const {
     mergeNewPost,
@@ -37,26 +43,26 @@ const {
 
 //Solicitud previa
 app.options("/", (req, res) => {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.header("Access-Control-Allow-Origin", "http://localhost:5000");
     res.header("Access-Control-Allow-Headers", "task"); // Allow the 'task 'header
     res.header("Access-Control-Allow-Methods", "GET"); // Allow the GET method
     res.header("Access-Control-Allow-Methods", "POST"); // Allow the POST method
     res.sendStatus(200);
 });
 
-app.post("/", textBodyParser, async function (req, res) {
+app.post("/wall", textBodyParser, async function (req, res) {
     let user = JSON.parse(req.body);
     console.log("usuario2: ", user.username); //print the HTTP Request Headers
     let post;
     if (req.headers["task"] == "getPost") {
-        post = mergeNewPost(user.username);
+        post = mergeNewPostAll(user.username);
         console.log(post);
         //res.send({ response });
         res.status(200).json(post);
         res.end();
     }
 });
-app.put("/", textBodyParser, async function (req, res) {
+app.put("/wall", textBodyParser, async function (req, res) {
     let data = JSON.parse(req.body);
     console.log(data); //print the HTTP Request Headers
     if (req.headers["task"] == "like") {
@@ -152,7 +158,7 @@ app.post("/login", textBodyParser, async function (req, res) {
 
                 res.status(200).json({ message: "Login Successful" });
             } else {
-                res.status(403).jdon({ message: "Login Failed" }); // 403 Forbidden Access
+                res.status(403).json({ message: "Login Failed" }); // 403 Forbidden Access
             }
         } catch (error) {
             console.log("authenticateUser() error:", error);
@@ -187,10 +193,12 @@ app.post("/post", async function (req, res) {
         console.log(numberOfPost.length);
         console.log(fields.textupload[0]);
         let newpath = "";
+        let savepicture = "";
         if (file.fileupload) {
             let filepath = file.fileupload[0].filepath;
             newpath = "./data/imgs/";
             newpath += fields.user + "" + numberOfPost.length + ".jpg";
+            savepicture = fields.user + "" + numberOfPost.length + ".jpg";
             fs.rename(filepath, newpath, function () {
                 res.send("Text with img posted!!");
                 res.end();
@@ -201,7 +209,7 @@ app.post("/post", async function (req, res) {
         }
         let newPost = {
             text: fields.textupload[0],
-            img: fields.user + "" + numberOfPost.length + ".jpg",
+            img: savepicture,
             likes: 0,
         };
         console.log(newPost);
